@@ -45,6 +45,13 @@ class App extends Component {
         }
       });
     }
+    else{
+      if(!this.state.newTemp){
+        alert("Enter a value first!");
+        return;
+      }
+      alert("You need to Unlcok an account first to send transactions!");
+    } 
 
   }
 
@@ -73,7 +80,7 @@ class App extends Component {
       else{
         console.log("temp");
         console.log(temp);
-        this.setState({currCelsiusTemp: temp});
+        this.setState({currKelvinTemp: temp});
       }
     });
   }
@@ -96,21 +103,24 @@ class App extends Component {
              Submit
              </Button>
           </Form>
-          Tx Hash : {this.state.transactionHash} {this.state.transactionHash?<a href={txViewURL} target="_blank">[View Transaction]</a>:""}
+          {this.state.transactionHash?<div>Tx Hash : {this.state.transactionHash} <a href={txViewURL} target="_blank"> [View Transaction]</a></div>:""}
           <Form onSubmit={this.getCelsiusTemp}>
              <Button 
              bsStyle="primary" 
              type="submit"> 
-             View
+             Get Celsius Temperature
              </Button>
           </Form>
+          {this.state.currCelsiusTemp? <div> Celsius Temperature: {this.state.currCelsiusTemp}</div> : "" }
           <Form onSubmit={this.getKelvinTemp}>
              <Button 
              bsStyle="primary" 
              type="submit"> 
-             View
+             Get Kelvin Temperature
              </Button>
           </Form>
+          {this.state.currKelvinTemp? <div> Celsius Temperature: {this.state.currKelvinTemp}</div> : "" }
+
       </Grid>
       </div>
     );
