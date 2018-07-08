@@ -8,8 +8,8 @@ const ethExplorerURL = "https://rinkeby.etherscan.io/";
 class App extends Component {
 
   state = {
-      currCelsiusTemp: null,
-      currKelvinTemp : null,
+      currCelsiusTemp: '',
+      currKelvinTemp : '',
       newTemp        : null,
       transactionHash: null
   };
@@ -57,6 +57,7 @@ class App extends Component {
 
   getCelsiusTemp = async(event) =>{
     event.preventDefault();
+    this.setState({currCelsiusTemp: 'fetching from rinkeby...'});
     console.log("getting Celsius temperature");
     await sampleContract.methods.getCelciusTemperature().call((error, temp) => {
       if(error){
@@ -72,6 +73,7 @@ class App extends Component {
 
   getKelvinTemp = async(event) =>{
     event.preventDefault();
+    this.setState({currKelvinTemp: 'fetching from rinkeby...'});
     console.log("getting Kelvin temperature");
     await sampleContract.methods.getKelvinTemperature().call((error, temp) => {
       if(error){
@@ -90,37 +92,58 @@ class App extends Component {
 
     return (
       <div className="App">
+      <h1>Ethereum Demo App</h1>
+      This Demo App Uses the SampleContract Deployed in Rinkeby Testnet at : <a href='https://rinkeby.etherscan.io/address/0xC0a310680B6717285C3644C3E552E361208df9E3#code' target="_blank">0xC0a310680B6717285C3644C3E552E361208df9E3</a>
+      <hr/>
+      <ul align='left'>
+        <li>This is a basic example to get started with Ethereum DApp Development. </li>
+        <li>This doesn't show an example use case of blockchain.</li>
+        <li>Refresh Temperature buttons will just query the contract storage. No transacrtion will be initiated. </li>
+        <li>Update Temperature will write to the contract storage. A Transaction will be intiated and it need to be mined to complete the updating process.</li>
+      </ul>
       <hr/>
       <Grid>
-          <Form onSubmit={this.setTemp}>
+          <br/>
+          <Form onSubmit={this.getCelsiusTemp}>
             <input 
+              type = "text"
+              disabled
+              value={this.state.currCelsiusTemp}
+            />
+             <Button 
+             bsStyle="primary" 
+             type="submit"> 
+             Refresh Celsius Temperature
+             </Button>
+          </Form>
+          {/* {this.state.currCelsiusTemp? <div> Celsius Temperature: {this.state.currCelsiusTemp}</div> : "" } */}
+          <br/>
+          <Form onSubmit={this.getKelvinTemp}>
+            <input 
+              type = "text"
+              value={this.state.currKelvinTemp}
+              disabled
+            />
+             <Button 
+             bsStyle="primary" 
+             type="submit"> 
+             Refresh Kelvin&nbsp;&nbsp; Temperature
+             </Button>
+          </Form>
+          {/* {this.state.currKelvinTemp? <div> Kelvin Temperature: {this.state.currKelvinTemp}</div> : "" } */}
+          <br/>
+          <Form onSubmit={this.setTemp}>
+            <input
               type = "text"
               onChange = {this.setNewTempVal}
             />
              <Button 
              bsStyle="primary" 
              type="submit"> 
-             Submit
+             Update Temperature(Celsius)
              </Button>
           </Form>
           {this.state.transactionHash?<div>Tx Hash : {this.state.transactionHash} <a href={txViewURL} target="_blank"> [View Transaction]</a></div>:""}
-          <Form onSubmit={this.getCelsiusTemp}>
-             <Button 
-             bsStyle="primary" 
-             type="submit"> 
-             Get Celsius Temperature
-             </Button>
-          </Form>
-          {this.state.currCelsiusTemp? <div> Celsius Temperature: {this.state.currCelsiusTemp}</div> : "" }
-          <Form onSubmit={this.getKelvinTemp}>
-             <Button 
-             bsStyle="primary" 
-             type="submit"> 
-             Get Kelvin Temperature
-             </Button>
-          </Form>
-          {this.state.currKelvinTemp? <div> Celsius Temperature: {this.state.currKelvinTemp}</div> : "" }
-
       </Grid>
       </div>
     );
