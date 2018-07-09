@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Table, Grid, Button, Form } from 'react-bootstrap';
 import sampleContract from './sampleContract';
 import web3 from './web3';
 import './App.css';
@@ -11,7 +10,7 @@ class App extends Component {
       currCelsiusTemp: '',
       currKelvinTemp : '',
       newTemp        : null,
-      transactionHash: null,
+      transactionHash: null ,
       transactionStatus : null,
       pending        :0
   };
@@ -50,17 +49,11 @@ class App extends Component {
         // get Transaction Receipt
         web3.eth.getTransactionReceipt(this.state.transactionHash, (err, txReceipt)=>{
           console.log(err,txReceipt);
-          this.setState({transactionStatus: "completed"});
+          this.setState({transactionStatus: "successful"});
           this.setState({txReceipt});
           this.setState({blockNumber: this.state.txReceipt.blockNumber});
           this.setState({gasUsed: this.state.txReceipt.gasUsed}); 
-        }); //await for getTransactionReceipt
-
-        // while (this.state.transactionStatus === "pending") {
-        //   console.log("inside2");
-        //   this.state.pending === 3 ? this.state.pending = 0 : this.state.pending++ ;
-        //   this.setState({blockNumber: this.state.pending});
-        // }
+        }); 
     }
     else{
       if(!this.state.newTemp){
@@ -107,91 +100,82 @@ class App extends Component {
   render() {
     const txViewURL = ethExplorerURL + "tx/" + this.state.transactionHash;
 
-    return (
-      <div className="App">
-      <h1>Ethereum Demo App</h1>
-      This Demo App Uses the SampleContract Deployed in Rinkeby Testnet at : <a href='https://rinkeby.etherscan.io/address/0xC0a310680B6717285C3644C3E552E361208df9E3#code' target="_blank">0xC0a310680B6717285C3644C3E552E361208df9E3</a>
-      <hr/>
-      <ul align='left'>
-        <li>This is a basic example to get started with Ethereum DApp Development. </li>
-        <li>This app doesn't really show an example use case of blockchain.</li>
-        <li>Refresh Temperature buttons will just query the contract storage. No transacrtion will be initiated. </li>
-        <li>Update Temperature will write to the contract storage. A Transaction will be intiated and it need to be mined to complete the updating process.</li>
-      </ul>
-      <hr/>
-      <Grid>
-          <br/>
-          <Form onSubmit={this.getCelsiusTemp}>
-            <input 
-              type = "text"
-              disabled
-              value={this.state.currCelsiusTemp}
-            />
-             <Button 
-             bsStyle="primary" 
-             type="submit"> 
-             Refresh Celsius Temperature
-             </Button>
-          </Form>
-          {/* {this.state.currCelsiusTemp? <div> Celsius Temperature: {this.state.currCelsiusTemp}</div> : "" } */}
-          <br/>
-          <Form onSubmit={this.getKelvinTemp}>
-            <input 
-              type = "text"
-              value={this.state.currKelvinTemp}
-              disabled
-            />
-             <Button 
-             bsStyle="primary" 
-             type="submit"> 
-             Refresh Kelvin&nbsp;&nbsp; Temperature
-             </Button>
-          </Form>
-          {/* {this.state.currKelvinTemp? <div> Kelvin Temperature: {this.state.currKelvinTemp}</div> : "" } */}
-          <br/>
-          <Form onSubmit={this.setTemp}>
-            <input
-              type = "text"
-              onChange = {this.setNewTempVal}
-            />
-             <Button 
-             bsStyle="primary" 
-             type="submit"> 
-             Update Temperature(Celsius)
-             </Button>
-          </Form>
-          <br/>
-          {/* {this.state.transactionHash?<div>Tx Hash : {this.state.transactionHash} <a href={txViewURL} target="_blank"> [View Transaction]</a></div>:""} */}
-          {this.state.transactionHash? 
-          <Table striped bordered condensed hover>
-                <thead>
-                  <tr>
-                    <th>Transaction Detail</th>
-                    <th>Value</th>
-                  </tr>
-                </thead>
-               
-                <tbody>
-                  <tr>
-                    <td>Transaction Hash </td>
-                    <td>{this.state.transactionHash} {this.state.transactionHash?<a href={txViewURL} target="_blank">[View Transaction]</a>:""}</td>
-                  </tr>
-
-                  <tr>
-                    <td>Block Number </td>
-                    <td>{this.state.blockNumber}</td>
-                  </tr>
-
-                  <tr>
-                    <td>Gas Used</td>
-                    <td>{this.state.gasUsed}</td>
-                  </tr>                
-                </tbody>
-            </Table>
-          : '' }
-      </Grid>
+    if(!web3){
+      alert("enable/inatsall metamask plugin and reload the page");
+      return(
+      <div style={{'paddingLeft' :'35%'}}> 
+        <h3>No Web3 Provider Found!</h3>
+        <h5>Web3 provider like <a href="https://metamask.io/">Metamask</a> is needed to use this app.</h5>
+        <div>
+          <li>Add the plugin/extension to your browser.</li>
+          <li>Unlcok your ethereum Account Using the web3 provider.</li>
+          <li>Reload the Page.</li>
+        </div>
       </div>
-    );
+      );
+    }
+    else{
+
+      return (
+        <div className="App container">
+        <h1>Ethereum Demo App</h1>
+        This Demo App Uses the SampleContract Deployed in Rinkeby Testnet at : <a href='https://rinkeby.etherscan.io/address/0xC0a310680B6717285C3644C3E552E361208df9E3#code' target="_blank">0xC0a310680B6717285C3644C3E552E361208df9E3</a>
+        <hr/>
+        <ul align='left'>
+          <li>This is a basic example to get started with Ethereum DApp Development. </li>
+          <li>This app doesn't really show an example use case of blockchain.</li>
+          <li>Refresh Temperature buttons will just query the contract storage. No transacrtion will be initiated. </li>
+          <li>Update Temperature will write to the contract storage. A Transaction will be intiated and it need to be mined to complete the updating process.</li>
+        </ul>
+        <hr/>
+        <div className="row">
+              <div className="col-sm-2 col-sm-offset-3"><input type="text" className="form-control" placeholder="Refresh to Fetch" value={this.state.currCelsiusTemp} disabled/></div>
+              <div className="col-sm-3"><button type="submit" className="btn btn-primary" onClick={this.getCelsiusTemp}>Refresh Celsius Temperature</button></div>
+        </div>
+        <br/><br/>
+        <div className="row">
+              <div className="col-sm-2 col-sm-offset-3"><input type="text" className="form-control" placeholder="Refresh to Fetch" value={this.state.currKelvinTemp} disabled/></div>
+              <div className="col-sm-3"><button type="submit" className="btn btn-primary" onClick={this.getKelvinTemp}>Refresh Kelvin&nbsp;&nbsp; Temperature</button></div>
+        </div>
+        <br/><br/>
+        <div className="row">
+              <div className="col-sm-2 col-sm-offset-3"><input type = "text" className="form-control" onChange = {this.setNewTempVal}/></div>
+              <div className="col-sm-3"><button type="submit" className="btn btn-primary" onClick={this.setTemp}>Update Temperature(Celsius)</button></div>
+        </div>
+        <br/>
+            {this.state.transactionHash?
+            <div>
+            <h4>Transaction is Initiated to set Temperature to {this.state.newTemp}. Transaction is {this.state.transactionStatus}!</h4>
+            <table className="table table-bordered table-responsive">
+                  <thead>
+                    <tr>
+                      <th>Transaction Detail</th>
+                      <th>Value</th>
+                    </tr>
+                  </thead>
+                
+                  <tbody>
+                    <tr>
+                      <td>Transaction Hash </td>
+                      <td>{this.state.transactionHash} {this.state.transactionHash?<a href={txViewURL} target="_blank">[View Transaction]</a>:""}</td>
+                    </tr>
+
+                    <tr>
+                      <td>Block Number </td>
+                      <td>{this.state.blockNumber}</td>
+                    </tr>
+
+                    <tr>
+                      <td>Gas Used</td>
+                      <td>{this.state.gasUsed}</td>
+                    </tr>                
+                  </tbody>
+              </table>
+            </div>
+            : '' }
+        </div>
+      );
+    }
   }
 }
 
